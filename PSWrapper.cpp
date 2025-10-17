@@ -84,9 +84,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             CBS_DROPDOWNLIST | WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP,
             10, 10, 200, 100,
             hWnd, (HMENU)1001, hInst, nullptr);
+
+        SendMessage(hComboBox, CB_ADDSTRING, 0, (LPARAM)L"Select a function...");
         SendMessage(hComboBox, CB_ADDSTRING, 0, (LPARAM)L"Create User");
         SendMessage(hComboBox, CB_ADDSTRING, 0, (LPARAM)L"Delete Profile");
         SendMessage(hComboBox, CB_ADDSTRING, 0, (LPARAM)L"Find Employee ID");
+
+        SendMessage(hComboBox, CB_SETCURSEL, 0, 0);
+
         hRunButton = CreateWindowEx(
             0, L"BUTTON", L"Run!",
             WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
@@ -104,9 +109,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             LPCWSTR scriptName = nullptr;
             switch (sel)
             {
-            case 0: scriptName = L"script1.ps1"; break;
-            case 1: scriptName = L"script2.ps1"; break;
-            case 2: scriptName = L"script3.ps1"; break;
+            case 1: scriptName = L"script1.ps1"; break;
+            case 2: scriptName = L"script2.ps1"; break;
+            case 3: scriptName = L"script3.ps1"; break;
             default:
                 MessageBox(hWnd, L"Please select a function from the dropdown.", L"Error", MB_OK | MB_ICONERROR);
                 return 0;
