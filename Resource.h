@@ -28,3 +28,7 @@
 #define _APS_NEXT_SYMED_VALUE		110
 #endif
 #endif
+
+#define IDR_SCRIPT1 101
+#define IDR_SCRIPT2 102
+#define IDR_SCRIPT3 103

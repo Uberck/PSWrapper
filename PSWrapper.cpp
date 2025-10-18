@@ -1,19 +1,20 @@
 #include "framework.h"
 #include "PSWrapper.h"
 #include <commctrl.h>
+#include <fstream>
 
 #define MAX_LOADSTRING 100
 
 HINSTANCE hInst;
 WCHAR szTitle[MAX_LOADSTRING] = L"Keolis Script Launcher v1.0";
 WCHAR szWindowClass[MAX_LOADSTRING];
-
 HBRUSH hBrushBlack = nullptr;
 
 ATOM MyRegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
+bool ExtractResourceToFile(WORD resourceID, const wchar_t* outPath);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -108,18 +109,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case 1002:
         {
             int sel = (int)SendMessage(hComboBox, CB_GETCURSEL, 0, 0);
-            LPCWSTR scriptName = nullptr;
+            WORD scriptResID = 0;
             switch (sel)
             {
-            case 1: scriptName = L"script1.ps1"; break;
-            case 2: scriptName = L"script2.ps1"; break;
-            case 3: scriptName = L"script3.ps1"; break;
+            case 1: scriptResID = IDR_SCRIPT1; break; // "Create User"
+            case 2: scriptResID = IDR_SCRIPT2; break; // "Delete Profile"
+            case 3: scriptResID = IDR_SCRIPT3; break; // "Find Employee ID"
             default:
                 MessageBox(hWnd, L"Please select a function from the dropdown.", L"Error", MB_OK | MB_ICONERROR);
                 return 0;
             }
+
+            wchar_t tempPath[MAX_PATH];
+            GetTempPathW(MAX_PATH, tempPath);
+            wchar_t tempFile[MAX_PATH];
+            wsprintf(tempFile, L"%sPSWScript%u.ps1", tempPath, scriptResID);
+
+            if (!ExtractResourceToFile(scriptResID, tempFile)) {
+                MessageBox(hWnd, L"Failed to extract script.", L"Error", MB_OK | MB_ICONERROR);
+                return 0;
+            }
+
             WCHAR cmdLine[512];
-            wsprintf(cmdLine, L"powershell.exe -ExecutionPolicy Bypass -File \"%s\"", scriptName);
+            wsprintf(cmdLine, L"powershell.exe -ExecutionPolicy Bypass -File \"%s\"", tempFile);
+
             STARTUPINFOW si = { sizeof(si) };
             PROCESS_INFORMATION pi;
             BOOL success = CreateProcessW(
@@ -177,4 +190,18 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+bool ExtractResourceToFile(WORD resourceID, const wchar_t* outPath) {
+    HRSRC hRes = FindResource(NULL, MAKEINTRESOURCE(resourceID), RT_RCDATA);
+    if (!hRes) return false;
+    HGLOBAL hData = LoadResource(NULL, hRes);
+    if (!hData) return false;
+    DWORD dataSize = SizeofResource(NULL, hRes);
+    void* pData = LockResource(hData);
+    if (!pData) return false;
+
+    std::ofstream ofs(outPath, std::ios::binary);
+    ofs.write(reinterpret_cast<const char*>(pData), dataSize);
+    return ofs.good();
 }
