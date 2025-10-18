@@ -5,7 +5,7 @@ while ($true) {
     cls # Clear the console screen for a fresh display each time
 
     # Display a message indicating what the script is doing
-    Write-Host "Checking BitLocker status on F: drive..." -ForegroundColor Cyan
+    Write-Host "Checking BitLocker status on C: drive..." -ForegroundColor Cyan
 
     # Show the current BitLocker status for the C: drive
     manage-bde -status C:
