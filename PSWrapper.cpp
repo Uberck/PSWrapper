@@ -8,6 +8,8 @@ HINSTANCE hInst;
 WCHAR szTitle[MAX_LOADSTRING] = L"Keolis Script Launcher v1.0";
 WCHAR szWindowClass[MAX_LOADSTRING];
 
+HBRUSH hBrushBlack = nullptr;
+
 ATOM MyRegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -93,7 +95,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SendMessage(hComboBox, CB_SETCURSEL, 0, 0);
 
         hRunButton = CreateWindowEx(
-            0, L"BUTTON", L"Run!",
+            0, L"BUTTON", L"Click to run!",
             WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
             10, 70, 200, 30,
             hWnd, (HMENU)1002, hInst, nullptr);
