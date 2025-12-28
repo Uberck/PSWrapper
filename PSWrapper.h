@@ -2,10 +2,11 @@
 
 #include "resource.h"
 #include <windows.h>
+#include <string>
 
 extern HINSTANCE hInst;
-extern WCHAR szTitle[];
-extern WCHAR szWindowClass[];
+extern std::wstring szTitle;
+extern std::wstring szWindowClass;
 extern HBRUSH hBrushBlack;
 
 ATOM                MyRegisterClass(HINSTANCE hInstance);

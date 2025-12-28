@@ -2,18 +2,15 @@
 #include "PSWrapper.h"
 #include <commctrl.h>
 #include <fstream>
+#include <string>
 
 #define MAX_LOADSTRING 100
 
 HINSTANCE hInst;
-WCHAR szTitle[MAX_LOADSTRING] = L"Keolis Script Launcher v1.0";
-WCHAR szWindowClass[MAX_LOADSTRING];
+std::wstring szTitle = L"Keolis Script Launcher v1.0";
+std::wstring szWindowClass;
 HBRUSH hBrushBlack = nullptr;
 
-ATOM MyRegisterClass(HINSTANCE hInstance);
-BOOL InitInstance(HINSTANCE, int);
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK About(HWND, UINT, WPARAM, LPARAM);
 bool ExtractResourceToFile(WORD resourceID, const wchar_t* outPath);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -24,7 +21,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    LoadStringW(hInstance, IDC_PSWRAPPER, szWindowClass, MAX_LOADSTRING);
+    wchar_t szWindowClassBuffer[MAX_LOADSTRING] = {};
+    LoadStringW(hInstance, IDC_PSWRAPPER, szWindowClassBuffer, MAX_LOADSTRING);
+    szWindowClass = szWindowClassBuffer;
     MyRegisterClass(hInstance);
 
     if (!InitInstance(hInstance, nCmdShow))
@@ -56,7 +55,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_PSWRAPPER);
-    wcex.lpszClassName = szWindowClass;
+    wcex.lpszClassName = szWindowClass.c_str();
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
     return RegisterClassExW(&wcex);
 }
@@ -66,7 +65,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     hInst = hInstance;
     DWORD style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU;
     int winWidth = 240, winHeight = 200;
-    HWND hWnd = CreateWindowW(szWindowClass, szTitle, style,
+    HWND hWnd = CreateWindowW(szWindowClass.c_str(), szTitle.c_str(), style,
         CW_USEDEFAULT, 0, winWidth, winHeight, nullptr, nullptr, hInstance, nullptr);
     if (!hWnd)
         return FALSE;
